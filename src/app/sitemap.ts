@@ -63,6 +63,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: canonical('/'), lastModified: BUILD_DATE, changeFrequency: 'weekly', priority: 1 },
     { url: canonical('/courses'), lastModified: BUILD_DATE, changeFrequency: 'weekly', priority: 0.9 },
     { url: canonical('/zero2live'), lastModified: BUILD_DATE, changeFrequency: 'weekly', priority: 0.9 },
+    // The free MSME training with GIZ (SEPIN-SUSI) and its application form.
+    { url: canonical('/msme'), lastModified: BUILD_DATE, changeFrequency: 'weekly', priority: 0.9 },
+    { url: canonical('/msme/apply'), lastModified: BUILD_DATE, changeFrequency: 'monthly', priority: 0.7 },
     { url: canonical('/about'), lastModified: BUILD_DATE, changeFrequency: 'monthly', priority: 0.8 },
     { url: canonical('/kids'), lastModified: BUILD_DATE, changeFrequency: 'monthly', priority: 0.8 },
     { url: canonical('/corporate'), lastModified: BUILD_DATE, changeFrequency: 'monthly', priority: 0.8 },

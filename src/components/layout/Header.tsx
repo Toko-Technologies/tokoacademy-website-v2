@@ -206,6 +206,17 @@ export default function Header() {
   const drawerLink =
     'flex min-h-[44px] items-center rounded-lg px-4 text-base font-medium transition-colors';
 
+  /*
+   * The call to action follows the page. On the MSME training pages a generic
+   * "Apply Now" would send someone ready to register for that training to the
+   * course catalogue instead, so there it registers for the training, and on
+   * the application form itself it steps aside.
+   */
+  const onMsmeApply = isActiveHref('/msme/apply');
+  const cta = isActiveHref('/msme')
+    ? { href: '/msme/apply/', label: 'Register free' }
+    : { href: externalLinks.applyNow, label: 'Apply Now' };
+
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       {/* Utility bar. Hidden on phones — the same numbers are in the drawer. */}
@@ -400,9 +411,11 @@ export default function Header() {
               <ThemeToggle />
               {/* An internal page now, so no target="_blank": opening our own
                   catalogue in a new tab strands the visitor's back button. */}
-              <Link href={externalLinks.applyNow} className="btn-primary px-6 py-3 text-base">
-                Apply Now
-              </Link>
+              {!onMsmeApply && (
+                <Link href={cta.href} className="btn-primary px-6 py-3 text-base">
+                  {cta.label}
+                </Link>
+              )}
             </div>
 
             {/* Phone controls. Both are 44px, the smallest a fingertip finds
@@ -563,13 +576,15 @@ export default function Header() {
                 instead — otherwise a phone has no route to a phone number from
                 the header at all. */}
             <div className="border-t border-line px-4 py-4">
-              <Link
-                href={externalLinks.applyNow}
-                onClick={() => closeMenu()}
-                className="btn-primary w-full"
-              >
-                Apply Now
-              </Link>
+              {!onMsmeApply && (
+                <Link
+                  href={cta.href}
+                  onClick={() => closeMenu()}
+                  className="btn-primary w-full"
+                >
+                  {cta.label}
+                </Link>
+              )}
               <div className="mt-4 space-y-1 text-sm">
                 <a href={`tel:${contactInfo.phones[0]}`} className="link-hover flex min-h-[44px] items-center gap-2 text-ink-muted">
                   <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
