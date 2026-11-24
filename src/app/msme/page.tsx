@@ -187,7 +187,7 @@ export default function MsmePage() {
       <section className="section-padding bg-sunken" id="about">
         <div className="section-container split">
           <figure className="split-media">
-            <img src={`${IMG}/training-mentorship-yola.jpg`} alt="A Toko Academy facilitator guiding participants during a practical session in Yola" width={1008} height={672} loading="lazy" />
+            <img src={`${IMG}/icss-facilitator-sepin-susi.jpg`} alt="A facilitator leading an ICSS session under the SEPIN-SUSI programme, with the GIZ and SMEDAN slide on the screen behind" width={1800} height={1350} loading="lazy" />
           </figure>
           <div className="split-copy">
             <p className="eyebrow text-brand">About the programme</p>
@@ -269,8 +269,8 @@ export default function MsmePage() {
           </div>
 
           <div className="eligibility-media" aria-hidden="true">
-            <img className="em-a" src={`${IMG}/shopkeeper-kaftan.jpg`} alt="" width={900} height={1350} loading="lazy" />
-            <img className="em-b" src={`${IMG}/shoe-vendor-jos.jpg`} alt="" width={1200} height={801} loading="lazy" />
+            <img className="em-a" src={`${IMG}/icss-participants-seated.jpg`} alt="" width={1800} height={1012} loading="lazy" />
+            <img className="em-b" src={`${IMG}/icss-training-room.jpg`} alt="" width={1800} height={1012} loading="lazy" />
           </div>
         </div>
       </section>
@@ -288,7 +288,7 @@ export default function MsmePage() {
             <li className="timeline-step">
               <div className="timeline-marker"><span>Week 1</span></div>
               <article className="card timeline-card">
-                <img src={`${IMG}/week1-in-person-workshop.jpg`} alt="Business owners seated around a conference table during an in-person Toko Academy workshop in Yola" width={1080} height={607} loading="lazy" />
+                <img src={`${IMG}/icss-in-person-session.jpg`} alt="Participants seated at long tables while a facilitator leads an in-person ICSS training session" width={1800} height={1012} loading="lazy" />
                 <div className="timeline-body">
                   <p className="timeline-when">Week of 30 November 2026</p>
                   <h3><Icon name="users" />Physical, in-person training</h3>
@@ -315,7 +315,7 @@ export default function MsmePage() {
       <section className="section-padding" id="benefits">
         <div className="section-container split split-reverse">
           <figure className="split-media split-media-tall">
-            <img src={`${IMG}/tailor-in-shop.jpg`} alt="A tailor smiling at his sewing table in his shop" width={1000} height={1333} loading="lazy" />
+            <img src={`${IMG}/icss-energiser.jpg`} alt="Participants on their feet during an energiser in an ICSS training session" width={1800} height={1012} loading="lazy" />
           </figure>
           <div className="split-copy">
             <p className="eyebrow text-brand">Why participate?</p>

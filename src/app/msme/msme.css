@@ -340,8 +340,8 @@
 
 .msme .eligibility-media { position: relative; display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: auto; }
 .msme .eligibility-media img { border-radius: var(--radius-lg); object-fit: cover; }
-.msme .em-a { grid-column: 1 / 9; grid-row: 1; aspect-ratio: 3 / 4; width: 100%; object-position: 50% 35%; }
-.msme .em-b { grid-column: 6 / 13; grid-row: 1; align-self: end; aspect-ratio: 4 / 3; width: 100%; margin-bottom: -2rem; border: 5px solid rgb(var(--surface-inverted)); object-position: 30% 50%; }
+.msme .em-a { grid-column: 1 / 9; grid-row: 1; aspect-ratio: 3 / 4; width: 100%; object-position: 80% 50%; /* the seated participants on the right */ }
+.msme .em-b { grid-column: 6 / 13; grid-row: 1; align-self: end; aspect-ratio: 4 / 3; width: 100%; margin-bottom: -2rem; border: 5px solid rgb(var(--surface-inverted)); object-position: 50% 50%; }
 @media (max-width: 1023px) { .msme .eligibility-media { max-width: 34rem; } }
 
 /* ---------- Timeline ---------- */
