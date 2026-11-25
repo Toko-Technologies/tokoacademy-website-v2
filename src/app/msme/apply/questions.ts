@@ -675,7 +675,7 @@ export const SECTIONS: Section[] = [
         help: 'Tick each one you agree to.',
         grid: false,
         options: [
-          { value: 'Attend at least 80% of all sessions, physical and virtual' },
+          { value: 'Attend 100% of all sessions, physical and virtual' },
           { value: 'Work with a coach to write a business plan for my business' },
           { value: 'Start or complete CAC registration, if the business is not yet registered' },
           { value: 'Open and use a business bank account, if the business does not have one' },
