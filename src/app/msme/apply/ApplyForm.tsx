@@ -47,7 +47,7 @@ const STORAGE_KEY = 'toko-msme-application';
 const NAME_ID = '121249134';
 const PHONE_ID = '942581385';
 const EMAIL_ID = '796740396';
-/** Sends the applicant a confirmation: email (ZeptoMail) or, with no email, SMS (Termii). */
+/** Sends the applicant a confirmation: email (ZeptoMail) if they gave one, and SMS (Termii) to their phone. */
 const NOTIFY_URL = '/api/msme-notify.php';
 const ELIGIBILITY_STEP = 1;
 const LAST = SECTIONS.length - 1;

@@ -3,9 +3,10 @@
  * MSME application confirmation: email (ZeptoMail) or SMS (Termii).
  *
  * Called by /msme/apply/ after an application has gone into the Google Form.
- *   - The applicant gave an email address  -> one email through ZeptoMail.
- *     If that email cannot be sent and there is a phone number, an SMS instead.
- *   - "I do not have an email address"      -> one SMS through Termii.
+ * Every applicant gets both channels they gave us:
+ *   - an email address -> one email through ZeptoMail, and
+ *   - a phone number   -> one SMS through Termii.
+ * "I do not have an email address" means SMS only.
  *
  * The message never states a date. It says the team will get back to people
  * who qualify, and links to the MSME page.
@@ -22,7 +23,7 @@
  *   - POST + JSON only, small bodies, same-origin requests only.
  *   - Nigerian mobile numbers only; email validated.
  *   - The text is fixed. Only a first name, reduced to letters, is inserted.
- *   - One confirmation per recipient per day, a per-IP hourly limit, and a
+ *   - One message per recipient per channel per day, a per-IP hourly limit, and a
  *     hard daily cap on emails and on SMS across the whole site.
  *
  * Written for PHP 7.4 and later.
@@ -374,28 +375,37 @@ if (bump($dir, 'ip:' . $ip, 3600) > (int) $cfg['max_per_ip_per_hour']) {
     respond(429, ['ok' => false, 'error' => 'rate_limited']);
 }
 
-// One confirmation per person per day, whichever way it goes.
-$who = $email !== '' ? 'to:' . $email : 'to:' . $phone;
-if (bump($dir, $who, 86400) > 1) {
-    respond(200, ['ok' => true, 'sent' => false, 'reason' => 'already_sent']);
+// Every applicant gets both: an email when they gave an address, and an SMS
+// when they gave a phone number. Each channel is limited separately to one
+// message per recipient per day, and has its own site-wide daily cap.
+$channels = [];
+
+if ($email !== '' && $hasEmail) {
+    if (bump($dir, 'to:' . $email, 86400) > 1) {
+        $channels['email'] = 'already_sent';
+    } elseif (bump($dir, 'cap:email', 86400, true) >= (int) $cfg['max_email_per_day']) {
+        $channels['email'] = 'daily_cap';
+        log_line($dir, 'email SKIPPED daily cap reached ' . mask($email));
+    } else {
+        bump($dir, 'cap:email', 86400);
+        $ok = send_email($cfg, $email, $name);
+        $channels['email'] = $ok ? 'sent' : 'failed';
+        log_line($dir, 'email ' . ($ok ? 'sent' : 'FAILED') . ' ' . mask($email));
+    }
 }
 
-$channel = null;
-$sent = false;
-
-if ($email !== '' && $hasEmail && bump($dir, 'cap:email', 86400, true) < (int) $cfg['max_email_per_day']) {
-    bump($dir, 'cap:email', 86400);
-    $sent = send_email($cfg, $email, $name);
-    $channel = 'email';
-    log_line($dir, 'email ' . ($sent ? 'sent' : 'FAILED') . ' ' . mask($email));
+if ($phone !== '' && $hasSms) {
+    if (bump($dir, 'to:' . $phone, 86400) > 1) {
+        $channels['sms'] = 'already_sent';
+    } elseif (bump($dir, 'cap:sms', 86400, true) >= (int) $cfg['max_sms_per_day']) {
+        $channels['sms'] = 'daily_cap';
+        log_line($dir, 'sms SKIPPED daily cap reached ' . mask($phone));
+    } else {
+        bump($dir, 'cap:sms', 86400);
+        $ok = send_sms($cfg, $phone, $name);
+        $channels['sms'] = $ok ? 'sent' : 'failed';
+        log_line($dir, 'sms ' . ($ok ? 'sent' : 'FAILED') . ' ' . mask($phone));
+    }
 }
 
-// No email address, or the email could not be sent: SMS.
-if (!$sent && $phone !== '' && $hasSms && bump($dir, 'cap:sms', 86400, true) < (int) $cfg['max_sms_per_day']) {
-    bump($dir, 'cap:sms', 86400);
-    $sent = send_sms($cfg, $phone, $name);
-    $channel = 'sms';
-    log_line($dir, 'sms ' . ($sent ? 'sent' : 'FAILED') . ' ' . mask($phone));
-}
-
-respond(200, ['ok' => true, 'sent' => $sent, 'channel' => $channel]);
+respond(200, ['ok' => true, 'sent' => in_array('sent', $channels, true), 'channels' => $channels]);
