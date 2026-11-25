@@ -157,7 +157,41 @@ function buildBody(a: Answers) {
 }
 
 /**
+ * Every answer as [question, answer] pairs, in form order, for the copy of
+ * the application that is emailed to the Toko Academy team.
+ */
+function buildDetails(a: Answers): [string, string][] {
+  const rows: [string, string][] = [];
+  for (const s of SECTIONS) {
+    for (const q of s.questions) {
+      if (!isShown(q, a)) continue;
+      const label = `${q.num ? `${q.num}. ` : ''}${q.label}`;
+      let value = '';
+      if (q.kind === 'text') {
+        if (q.noEmail && a.noEmail) value = q.noEmail.value;
+        else {
+          const raw = a.text[q.id] ?? '';
+          value = q.field.phone ? normalisePhone(raw) : raw.trim();
+        }
+      } else if (q.kind === 'date') {
+        const [y = '', m = '', d = ''] = (a.text[q.id] ?? '').split('-');
+        value = y ? `${d}/${m}/${y}` : '';
+      } else {
+        const picked = a.picked[q.id] ?? [];
+        value = q.options
+          .filter((o) => picked.includes(o.value))
+          .map((o) => (o.other ? `Other: ${(a.text[`${q.id}.other`] ?? '').trim()}` : o.value))
+          .join('; ');
+      }
+      rows.push([label.slice(0, 300), value.slice(0, 2000)]);
+    }
+  }
+  return rows;
+}
+
+/**
  * Asks the server to send the confirmation, once the application is in.
+ * The server first emails the whole application to the Toko Academy team.
  * Fire and forget: whatever happens here, the application itself has already
  * been submitted, so a failure is never shown to the applicant. `keepalive`
  * lets the request finish even if they close the tab straight away.
@@ -168,13 +202,16 @@ function sendConfirmation(a: Answers) {
     name: (a.text[NAME_ID] ?? '').trim(),
     email,
     phone: normalisePhone(a.text[PHONE_ID] ?? ''),
+    details: buildDetails(a),
   };
+  const body = JSON.stringify(payload);
   try {
     fetch(NOTIFY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      keepalive: true,
+      body,
+      // Browsers refuse keepalive bodies over 64 KB; very long answers go without it.
+      keepalive: new TextEncoder().encode(body).length < 60000,
       credentials: 'omit',
     }).catch(() => { /* confirmation is best-effort */ });
   } catch {

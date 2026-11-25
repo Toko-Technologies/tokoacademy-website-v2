@@ -3,6 +3,8 @@
  * MSME application confirmation: email (ZeptoMail) or SMS (Termii).
  *
  * Called by /msme/apply/ after an application has gone into the Google Form.
+ * First, the whole application is emailed to the Toko Academy team
+ * ('team_email', tokoacademyinstitute@gmail.com by default). Then:
  * Every applicant gets both channels they gave us:
  *   - an email address -> one email through ZeptoMail, and
  *   - a phone number   -> one SMS through Termii.
@@ -50,6 +52,8 @@ function toko_config(): array
         'mail_from_address'    => 'noreply@tokoacademy.org',
         'mail_from_name'       => 'Toko Academy',
         'mail_reply_to'        => 'info@tokoacademy.org',
+        // Every application, in full, is emailed here first.
+        'team_email'           => 'tokoacademyinstitute@gmail.com',
 
         // Termii (https://termii.com) - API key and an approved Sender ID
         'termii_api_key'       => '',
@@ -128,6 +132,16 @@ function mask(string $s): string
         return substr($u, 0, 2) . '***@' . $d;
     }
     return substr($s, 0, 6) . '****' . substr($s, -2);
+}
+
+/** The first $n characters, never splitting a multi-byte character. */
+function cut(string $s, int $n): string
+{
+    if (function_exists('mb_substr')) {
+        return mb_substr($s, 0, $n, 'UTF-8');
+    }
+    $c = substr($s, 0, $n);
+    return preg_match('//u', $c) ? $c : (preg_replace('/[\x80-\xFF]+$/', '', $c) ?? '');
 }
 
 /** "  amina  BELLO-musa " -> "Amina". Letters, apostrophes and hyphens only. */
@@ -255,23 +269,73 @@ function sms_content(string $name, string $msmeUrl): string
 /* Senders                                                                 */
 /* ----------------------------------------------------------------------- */
 
-function send_email(array $cfg, string $to, string $name): bool
+/** One email through ZeptoMail. */
+function zepto_send(array $cfg, string $to, string $toName, string $subject, string $html, string $text, string $replyTo, string $replyName): bool
 {
-    [$subject, $html, $text] = email_content($name, (string) $cfg['msme_url']);
     $token = trim((string) $cfg['zeptomail_token']);
     if (stripos($token, 'Zoho-enczapikey') !== 0) {
         $token = 'Zoho-enczapikey ' . $token;
     }
     $payload = [
         'from'     => ['address' => $cfg['mail_from_address'], 'name' => $cfg['mail_from_name']],
-        'to'       => [['email_address' => ['address' => $to, 'name' => $name !== '' ? $name : $to]]],
-        'reply_to' => [['address' => $cfg['mail_reply_to'], 'name' => $cfg['mail_from_name']]],
+        'to'       => [['email_address' => ['address' => $to, 'name' => $toName !== '' ? $toName : $to]]],
+        'reply_to' => [['address' => $replyTo, 'name' => $replyName]],
         'subject'  => $subject,
         'htmlbody' => $html,
         'textbody' => $text,
     ];
     [$status] = post_json((string) $cfg['zeptomail_api_url'], $payload, ['Authorization: ' . $token]);
     return $status >= 200 && $status < 300;
+}
+
+function send_email(array $cfg, string $to, string $name): bool
+{
+    [$subject, $html, $text] = email_content($name, (string) $cfg['msme_url']);
+    return zepto_send($cfg, $to, $name, $subject, $html, $text, (string) $cfg['mail_reply_to'], (string) $cfg['mail_from_name']);
+}
+
+/**
+ * The whole application, as the applicant filled it in, for the Toko Academy
+ * team. Replying to it goes to the applicant when they gave an email address.
+ *
+ * @param array<int, array{0: string, 1: string}> $details
+ */
+function send_team_copy(array $cfg, string $fullName, string $email, string $phone, array $details): bool
+{
+    $h = static function (string $s): string {
+        return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+    };
+    $who = $fullName !== '' ? $fullName : 'New applicant';
+    $subject = 'New MSME application: ' . $who;
+    $when = (new DateTime('now', new DateTimeZone('Africa/Lagos')))->format('j M Y, g:i a') . ' (Nigeria time)';
+
+    $text = "New application for the MSME Capacity Development Training.\nReceived: {$when}\n\n";
+    $rows = '';
+    foreach ($details as [$q, $a]) {
+        $text .= "{$q}\n" . ($a !== '' ? $a : '-') . "\n\n";
+        $rows .= '<tr><td style="padding:10px 12px;border-bottom:1px solid #e4e7eb;vertical-align:top;width:45%;color:#52606d;font-size:13px">' . $h($q) . '</td>'
+            . '<td style="padding:10px 12px;border-bottom:1px solid #e4e7eb;vertical-align:top;font-size:14px;white-space:pre-wrap">' . ($a !== '' ? $h($a) : '&ndash;') . '</td></tr>';
+    }
+    if ($details === []) {
+        $text .= "Name: {$fullName}\nEmail: {$email}\nPhone: {$phone}\n";
+        $rows = '<tr><td style="padding:10px 12px">Name</td><td style="padding:10px 12px">' . $h($fullName) . '</td></tr>'
+            . '<tr><td style="padding:10px 12px">Email</td><td style="padding:10px 12px">' . $h($email) . '</td></tr>'
+            . '<tr><td style="padding:10px 12px">Phone</td><td style="padding:10px 12px">' . $h($phone) . '</td></tr>';
+    }
+    $text .= "The same application is also in the Google Form responses.";
+
+    $html = '<!doctype html><html><body style="margin:0;background:#f4f6f8;font-family:Arial,Helvetica,sans-serif;color:#1f2933">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;padding:24px 12px"><tr><td align="center">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:720px;background:#ffffff;border-radius:12px;overflow:hidden">'
+        . '<tr><td style="background:#2e7d32;padding:18px 24px;color:#ffffff;font-size:17px;font-weight:bold">New MSME application: ' . $h($who) . '</td></tr>'
+        . '<tr><td style="padding:16px 24px 4px;font-size:13px;color:#52606d">Received ' . $h($when) . '</td></tr>'
+        . '<tr><td style="padding:8px 12px 20px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">' . $rows . '</table></td></tr>'
+        . '<tr><td style="padding:14px 24px;border-top:1px solid #e4e7eb;font-size:12px;color:#7b8794">The same application is also in the Google Form responses.</td></tr>'
+        . '</table></td></tr></table></body></html>';
+
+    $replyTo = $email !== '' ? $email : (string) $cfg['mail_reply_to'];
+    $replyName = $email !== '' ? $who : (string) $cfg['mail_from_name'];
+    return zepto_send($cfg, (string) $cfg['team_email'], 'Toko Academy', $subject, $html, $text, $replyTo, $replyName);
 }
 
 function send_sms(array $cfg, string $to, string $name): bool
@@ -307,9 +371,9 @@ if ($origin === '' || !in_array($origin, $allowed, true)) {
     respond(403, ['ok' => false, 'error' => 'forbidden']);
 }
 
-$raw = file_get_contents('php://input', false, null, 0, 4096);
+$raw = file_get_contents('php://input', false, null, 0, 65537);
 $in = json_decode($raw ?: '', true);
-if (!is_array($in)) {
+if (!is_array($in) || strlen((string) $raw) > 65536) {
     respond(400, ['ok' => false, 'error' => 'bad_request']);
 }
 
@@ -323,8 +387,19 @@ $emailRaw = is_string($in['email'] ?? null) ? trim($in['email']) : '';
 $email = (strlen($emailRaw) <= 120 && filter_var($emailRaw, FILTER_VALIDATE_EMAIL)) ? strtolower($emailRaw) : '';
 $phone = ng_phone(is_string($in['phone'] ?? null) ? $in['phone'] : '');
 
-if ($email === '' && $phone === '') {
-    respond(400, ['ok' => false, 'error' => 'no_valid_contact']);
+// The full name as typed, on one line, for the team's copy.
+$fullName = is_string($in['name'] ?? null) ? $in['name'] : '';
+$fullName = trim(preg_replace('/[\x00-\x1F\x7F]+/u', ' ', $fullName) ?? '');
+$fullName = cut($fullName, 100);
+
+// Every answer, as [question, answer] pairs. Anything else is ignored.
+$details = [];
+if (is_array($in['details'] ?? null)) {
+    foreach (array_slice($in['details'], 0, 80) as $row) {
+        if (is_array($row) && is_string($row[0] ?? null) && is_string($row[1] ?? null)) {
+            $details[] = [cut($row[0], 300), cut($row[1], 2000)];
+        }
+    }
 }
 
 $hasEmail = trim((string) $cfg['zeptomail_token']) !== '';
@@ -334,10 +409,21 @@ if (!$hasEmail && !$hasSms) {
 }
 
 $dir = data_dir($cfg);
-
-// Every applicant gets both: an email when they gave an address, and an SMS
-// when they gave a phone number. No sending limits.
 $channels = [];
+
+// First, the whole application to the Toko Academy team.
+if ($hasEmail && trim((string) $cfg['team_email']) !== '' && ($details !== [] || $fullName !== '')) {
+    $ok = send_team_copy($cfg, $fullName, $email, $phone, $details);
+    $channels['team'] = $ok ? 'sent' : 'failed';
+    log_line($dir, 'team copy ' . ($ok ? 'sent' : 'FAILED'));
+}
+
+if ($email === '' && $phone === '') {
+    respond(200, ['ok' => true, 'sent' => in_array('sent', $channels, true), 'channels' => $channels, 'reason' => 'no_valid_contact']);
+}
+
+// Then the applicant: an email when they gave an address, and an SMS when
+// they gave a phone number. No sending limits.
 
 if ($email !== '' && $hasEmail) {
     $ok = send_email($cfg, $email, $name);
