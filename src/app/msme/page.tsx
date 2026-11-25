@@ -19,6 +19,28 @@ import { MSME_APPLY_PATH, MSME_START } from './config';
 
 const IMG = '/images/msme';
 
+/** Partner logos, cropped from public/4logos.jpeg (Toko Academy left out). */
+const PARTNER_LOGOS = [
+  { src: 'eu-cofunded.png', alt: 'Co-funded by the European Union', w: 408, h: 375 },
+  { src: 'german-cooperation.png', alt: 'German Cooperation (Deutsche Zusammenarbeit)', w: 630, h: 369 },
+  { src: 'nigeria-coat-of-arms.png', alt: 'Coat of arms of the Federal Republic of Nigeria', w: 414, h: 360 },
+  { src: 'giz-implemented-by.png', alt: 'Implemented by GIZ — Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ) GmbH', w: 363, h: 162 },
+  { src: 'bincike-international.png', alt: 'Bincike International', w: 528, h: 225 },
+  { src: 'jaress-agricultural-finance.png', alt: 'Jaress Agricultural Finance Ltd (J.A.F.)', w: 267, h: 267 },
+];
+
+function PartnerLogos({ compact = false }: { compact?: boolean }) {
+  return (
+    <ul className={`logo-strip${compact ? ' logo-strip-compact' : ''}`}>
+      {PARTNER_LOGOS.map((l) => (
+        <li key={l.src}>
+          <img src={`${IMG}/${l.src}`} alt={l.alt} width={l.w} height={l.h} loading="lazy" />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export const metadata: Metadata = pageMetadata({
   path: '/msme',
   title: 'MSME Capacity Development Training',
@@ -200,15 +222,16 @@ export default function MsmePage() {
               <ol className="pathway-steps">
                 <li>Inspire</li>
                 <li>Create</li>
-                <li>Start</li>
-                <li className="is-current" aria-current="step">Scale <span>This programme</span></li>
+                <li>Scale</li>
+                <li className="is-current" aria-current="step">START <span>This programme</span></li>
               </ol>
               <p className="pathway-note">For established businesses ready to grow. You do not need to have attended earlier ICSS stages to apply.</p>
             </div>
 
-            <p className="partner-line">
-              Organised by <strong>Toko Academy</strong> in partnership with <strong>GIZ</strong> under the <strong>SEPIN-SUSI Project</strong>.
-            </p>
+            <div className="partner-line">
+              <p>In partnership with <strong>GIZ</strong> under the <strong>SEPIN-SUSI Project</strong>.</p>
+              <PartnerLogos compact />
+            </div>
           </div>
         </div>
       </section>
@@ -404,20 +427,8 @@ export default function MsmePage() {
       <section className="partners" aria-labelledby="partners-title">
         <div className="section-container">
           <h2 className="eyebrow partners-title" id="partners-title">Organisers and partners</h2>
-          <div className="partner-row">
-            <div className="partner">
-              <span className="partner-label">Organised by</span>
-              <img src={`${IMG}/toko-academy-logo.png`} alt="Toko Academy" width={445} height={144} className="logo-toko" loading="lazy" />
-            </div>
-            <div className="partner">
-              <span className="partner-label">In partnership with</span>
-              <img src={`${IMG}/giz-logo.svg`} alt="GIZ — Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ) GmbH" width={307} height={80} className="logo-giz" loading="lazy" />
-            </div>
-            <div className="partner">
-              <span className="partner-label">Project</span>
-              <p className="project-name">SEPIN-SUSI Project</p>
-            </div>
-          </div>
+          <PartnerLogos />
+          <p className="partners-project">SEPIN-SUSI Project</p>
         </div>
       </section>
 

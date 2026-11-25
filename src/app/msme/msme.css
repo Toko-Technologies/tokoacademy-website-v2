@@ -283,6 +283,7 @@
   border-top: 1px solid rgb(var(--line));
   font-size: .9375rem;
 }
+.msme .partner-line p { margin: 0; color: rgb(var(--ink-muted)); }
 
 /* ---------- Modules ---------- */
 .msme .modules { display: grid; gap: 1rem; grid-template-columns: 1fr; counter-reset: none; }
@@ -437,14 +438,18 @@
 /* ---------- Partners ---------- */
 .msme .partners { padding-block: 3.5rem; border-top: 1px solid rgb(var(--line)); }
 .msme .partners-title { text-align: center; margin-bottom: 2rem; font-size: .75rem; }
-.msme .partner-row { display: grid; gap: 2rem; justify-items: center; align-items: end; }
-@media (min-width: 720px) { .msme .partner-row { grid-template-columns: repeat(3, 1fr); gap: 0; } .msme .partner + .partner { border-left: 1px solid rgb(var(--line)); } }
-.msme .partner { display: flex; flex-direction: column; align-items: center; gap: .9rem; width: 100%; padding-inline: 1rem; }
-.msme .partner-label { font-size: .75rem; font-weight: 500; color: rgb(var(--ink-subtle)); }
-.msme .logo-toko { height: 64px; width: auto; }
-.msme .logo-giz { height: 52px; width: auto; margin-block: 6px; }
-:root.dark .msme .logo-giz { background: #fff; padding: 8px 12px; border-radius: .5rem; height: 68px; margin-block: -2px; }
-.msme .project-name { height: 64px; margin: 0; display: grid; place-items: center; font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; color: rgb(var(--ink)); }
+/* Logo strip: the logos were cropped from a white panel, so the strip stays white in both themes. */
+.msme .logo-strip {
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+  gap: 1.25rem 2.25rem; margin: 0 auto; padding: 1.5rem 1.75rem;
+  max-width: 64rem; background: #fff; border: 1px solid rgb(var(--line)); border-radius: var(--radius);
+}
+.msme .logo-strip li { display: flex; align-items: center; }
+.msme .logo-strip img { height: 72px; width: auto; max-width: 160px; object-fit: contain; }
+@media (max-width: 639px) { .msme .logo-strip { gap: 1rem 1.5rem; padding: 1.25rem; } .msme .logo-strip img { height: 52px; max-width: 120px; } }
+.msme .logo-strip-compact { justify-content: flex-start; gap: .85rem 1.25rem; padding: .9rem 1rem; margin-top: .85rem; }
+.msme .logo-strip-compact img { height: 44px; max-width: 100px; }
+.msme .partners-project { margin: 1.25rem 0 0; text-align: center; font-size: 1.1rem; font-weight: 800; letter-spacing: -.02em; color: rgb(var(--ink)); }
 
 /* The zip's own footer is not used: the site footer follows the page. */
 
