@@ -19,21 +19,25 @@ import { MSME_APPLY_PATH, MSME_START } from './config';
 
 const IMG = '/images/msme';
 
-/** Partner logos, cropped from public/4logos.jpeg (Toko Academy left out). */
+/**
+ * Partner logos from the 4logos panel (Toko Academy left out). EU, GIZ and the
+ * coat of arms are vector / official renders; the other three are cleaned crops.
+ * `wide` logos get a little more width so they read at the same visual weight.
+ */
 const PARTNER_LOGOS = [
-  { src: 'eu-cofunded.png', alt: 'Co-funded by the European Union', w: 408, h: 375 },
-  { src: 'german-cooperation.png', alt: 'German Cooperation (Deutsche Zusammenarbeit)', w: 630, h: 369 },
-  { src: 'nigeria-coat-of-arms.png', alt: 'Coat of arms of the Federal Republic of Nigeria', w: 414, h: 360 },
-  { src: 'giz-implemented-by.png', alt: 'Implemented by GIZ — Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ) GmbH', w: 363, h: 162 },
-  { src: 'bincike-international.png', alt: 'Bincike International', w: 528, h: 225 },
-  { src: 'jaress-agricultural-finance.png', alt: 'Jaress Agricultural Finance Ltd (J.A.F.)', w: 267, h: 267 },
+  { src: 'eu-cofunded.svg', alt: 'Co-funded by the European Union', w: 460, h: 420 },
+  { src: 'german-cooperation.png', alt: 'German Cooperation (Deutsche Zusammenarbeit)', w: 840, h: 492, wide: true },
+  { src: 'nigeria-coat-of-arms.png', alt: 'Coat of arms of the Federal Republic of Nigeria', w: 400, h: 339 },
+  { src: 'giz-logo.svg', alt: 'Implemented by GIZ — Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ) GmbH', w: 307, h: 80, wide: true },
+  { src: 'bincike-international.png', alt: 'Bincike International', w: 704, h: 300, wide: true },
+  { src: 'jaress-agricultural-finance.png', alt: 'Jaress Agricultural Finance Ltd (J.A.F.)', w: 356, h: 356 },
 ];
 
 function PartnerLogos({ compact = false }: { compact?: boolean }) {
   return (
     <ul className={`logo-strip${compact ? ' logo-strip-compact' : ''}`}>
       {PARTNER_LOGOS.map((l) => (
-        <li key={l.src}>
+        <li key={l.src} className={l.wide ? 'is-wide' : undefined}>
           <img src={`${IMG}/${l.src}`} alt={l.alt} width={l.w} height={l.h} loading="lazy" />
         </li>
       ))}

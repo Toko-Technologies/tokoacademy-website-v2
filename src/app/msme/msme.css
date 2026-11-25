@@ -438,17 +438,23 @@
 /* ---------- Partners ---------- */
 .msme .partners { padding-block: 3.5rem; border-top: 1px solid rgb(var(--line)); }
 .msme .partners-title { text-align: center; margin-bottom: 2rem; font-size: .75rem; }
-/* Logo strip: the logos were cropped from a white panel, so the strip stays white in both themes. */
+/* Logo grid: the crops come from a white panel, so the card stays white in both themes.
+   Even grid everywhere: 2 x 3 on phones, 3 x 2 on tablets, one row of 6 on desktop. */
 .msme .logo-strip {
-  display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
-  gap: 1.25rem 2.25rem; margin: 0 auto; padding: 1.5rem 1.75rem;
-  max-width: 64rem; background: #fff; border: 1px solid rgb(var(--line)); border-radius: var(--radius);
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+  margin: 0 auto; max-width: 68rem; overflow: hidden;
+  background: rgb(15 23 42 / .08); border: 1px solid rgb(var(--line)); border-radius: var(--radius);
 }
-.msme .logo-strip li { display: flex; align-items: center; }
-.msme .logo-strip img { height: 72px; width: auto; max-width: 160px; object-fit: contain; }
-@media (max-width: 639px) { .msme .logo-strip { gap: 1rem 1.5rem; padding: 1.25rem; } .msme .logo-strip img { height: 52px; max-width: 120px; } }
-.msme .logo-strip-compact { justify-content: flex-start; gap: .85rem 1.25rem; padding: .9rem 1rem; margin-top: .85rem; }
-.msme .logo-strip-compact img { height: 44px; max-width: 100px; }
+.msme .logo-strip li { display: grid; place-items: center; height: 108px; padding: 1rem 1.1rem; background: #fff; }
+.msme .logo-strip img { max-height: 64px; max-width: 100%; width: auto; height: auto; object-fit: contain; }
+.msme .logo-strip li.is-wide img { max-height: 52px; }
+@media (min-width: 640px) { .msme .logo-strip { grid-template-columns: repeat(3, 1fr); } .msme .logo-strip li { height: 124px; } .msme .logo-strip img { max-height: 72px; } .msme .logo-strip li.is-wide img { max-height: 58px; } }
+@media (min-width: 1024px) { .msme .logo-strip { grid-template-columns: repeat(6, 1fr); } }
+/* Compact version under the About copy: always 3 x 2, smaller cells. */
+.msme .logo-strip-compact { grid-template-columns: repeat(3, 1fr) !important; margin-top: .9rem; }
+.msme .logo-strip-compact li { height: 76px !important; padding: .6rem .7rem; }
+.msme .logo-strip-compact img { max-height: 46px !important; }
+.msme .logo-strip-compact li.is-wide img { max-height: 36px !important; }
 .msme .partners-project { margin: 1.25rem 0 0; text-align: center; font-size: 1.1rem; font-weight: 800; letter-spacing: -.02em; color: rgb(var(--ink)); }
 
 /* The zip's own footer is not used: the site footer follows the page. */
