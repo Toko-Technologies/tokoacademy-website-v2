@@ -9,10 +9,10 @@ export const metadata: Metadata = pageMetadata({
   path: '/corporate',
   title: 'Corporate Training & IT Consultation',
   description:
-    'Tailored digital skills training for teams, agencies and institutions — delivered on site or remotely, built around your objectives, and certificated.',
+    'Tailored digital skills, entrepreneurship and business development training for teams, agencies, institutions and MSMEs — delivered on site or remotely, built around your objectives, and certificated.',
   socialTitle: 'Corporate Training & IT Consultation | Toko Academy',
   socialDescription:
-    'Upskill your workforce with a curriculum designed around your business objectives, plus strategic IT consulting and digital transformation support.',
+    'Upskill your workforce with a curriculum designed around your business objectives, plus entrepreneurship and business development services (BDS), IT consulting and digital transformation support.',
   image: {
     url: `${SITE_URL}/images/hero/professional-courses.jpg`,
     alt: 'Professionals in a Toko Academy corporate training session',
@@ -26,7 +26,7 @@ const entityJsonLd = pageEntityJsonLd({
   path: '/corporate',
   name: 'Corporate Training & IT Consultation',
   description:
-    'Tailored digital skills training and IT consultation from Toko Academy for companies, government agencies and development organisations.',
+    'Tailored digital skills training, entrepreneurship and business development services, and IT consultation from Toko Academy for companies, government agencies, development organisations and MSMEs.',
   breadcrumbs: [
     { name: 'Home', path: '/' },
     { name: 'Programs', path: '/courses' },
@@ -65,6 +65,20 @@ const services = [
     ],
   },
   {
+    title: 'Entrepreneurship & business development services',
+    description:
+      'For business owners, MSMEs and the programmes that support them: practical training and BDS that turn a business that runs into a business that grows.',
+    features: [
+      'Entrepreneurship and business planning training',
+      'MSME BDS consultation: diagnostics and business plan review',
+      'Market research, marketing and business intelligence',
+      'Financial planning, cash flow and access to finance',
+      'Business formalisation: CAC, SMEDAN and TIN registration',
+      'Coaching and mentorship after training',
+    ],
+    link: { href: '/msme/', label: 'See our MSME programme' },
+  },
+  {
     title: 'IT consultation & strategy',
     description:
       'Advice on what to build, what to buy and what to stop paying for — and a plan your people can actually execute.',
@@ -86,6 +100,10 @@ const trainingAreas = [
   'AI & machine learning basics',
   'Project management & Agile',
   'UI/UX design principles',
+  'Entrepreneurship & business planning',
+  'Business development services (BDS)',
+  'Financial planning & access to finance',
+  'Business formalisation (CAC, SMEDAN, TIN)',
 ];
 
 const process = [
@@ -157,7 +175,8 @@ export default function CorporatePage() {
               <p className="prose-measure mt-6 text-lg text-ink-muted">
                 We build the curriculum around your objectives, deliver it on site or remotely, assess
                 everyone at the end and hand you the results. Teams, agencies, regulators and development
-                organisations — the format changes, the approach does not.
+                organisations — the format changes, the approach does not. For business owners and MSMEs,
+                we also deliver entrepreneurship training and business development services.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link href="/contact" className="btn-primary">
@@ -225,10 +244,10 @@ export default function CorporatePage() {
         <div className="section-container">
           <div className="reveal prose-measure">
             <p className="eyebrow">What we deliver</p>
-            <h2 className="mt-4">Three ways we work with an organisation.</h2>
+            <h2 className="mt-4">Four ways we work with an organisation.</h2>
           </div>
 
-          <div className="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
+          <div className="mt-10 grid gap-10 md:grid-cols-2 md:gap-x-10 md:gap-y-12">
             {services.map((service, index) => (
               <div key={service.title} className={`reveal ${delay(index)}`}>
                 <p className="font-heading text-sm font-bold text-brand">{`0${index + 1}`}</p>
@@ -242,6 +261,11 @@ export default function CorporatePage() {
                     </li>
                   ))}
                 </ul>
+                {'link' in service && service.link && (
+                  <Link href={service.link.href} className="mt-5 inline-block font-semibold text-brand">
+                    {service.link.label} →
+                  </Link>
+                )}
               </div>
             ))}
           </div>

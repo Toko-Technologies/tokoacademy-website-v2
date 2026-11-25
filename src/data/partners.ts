@@ -1,4 +1,5 @@
-export type PartnerCategory = 
+export type PartnerCategory =
+  | 'Development Partners'
   | 'Federal Government & Regulatory Agencies'
   | 'Academic Partners'
   | 'International & Public Diplomacy Partners'
@@ -17,6 +18,42 @@ export interface Partner {
 }
 
 export const partners: Partner[] = [
+  // Development Partners - the SEPIN-SUSI Project, under which Toko Academy
+  // delivers the MSME Capacity Development Training (see /msme). First, so the
+  // homepage strip shows them. Same files as the /msme page.
+  {
+    id: 'eu',
+    name: 'European Union',
+    logo: '/images/msme/eu-cofunded.svg',
+    logoAlt: 'Co-funded by the European Union',
+    category: 'Development Partners',
+    description: 'Co-funder of the SEPIN-SUSI Project'
+  },
+  {
+    id: 'german-cooperation',
+    name: 'German Cooperation (Deutsche Zusammenarbeit)',
+    logo: '/images/msme/german-cooperation.png',
+    logoAlt: 'German Cooperation, Deutsche Zusammenarbeit',
+    category: 'Development Partners',
+    description: 'Co-funder of the SEPIN-SUSI Project'
+  },
+  {
+    id: 'fgn',
+    name: 'Federal Government of Nigeria',
+    logo: '/images/msme/nigeria-coat-of-arms.png',
+    logoAlt: 'Coat of arms of the Federal Republic of Nigeria',
+    category: 'Development Partners',
+    description: 'Government partner on the SEPIN-SUSI Project'
+  },
+  {
+    id: 'giz',
+    name: 'GIZ',
+    logo: '/images/msme/giz-logo.svg',
+    logoAlt: 'GIZ — Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ) GmbH',
+    category: 'Development Partners',
+    description: 'Implementing agency of the SEPIN-SUSI Project'
+  },
+
   // Federal Government & Regulatory Agencies
   {
     id: 'nscdc',
@@ -120,6 +157,7 @@ export const partnersByCategory = partners.reduce((acc, partner) => {
 }, {} as Record<PartnerCategory, Partner[]>);
 
 export const partnerCategoryDescriptions: Record<PartnerCategory, string> = {
+  'Development Partners': 'The SEPIN-SUSI Project, under which Toko Academy delivers the free MSME Capacity Development Training for businesses in Yola North and Yola South: co-funded by the European Union and German Cooperation, and implemented by GIZ with the Federal Government of Nigeria.',
   'Federal Government & Regulatory Agencies': 'Toko Academy delivered structured AI and digital literacy training to officers across these federal agencies in November 2025.',
   'Academic Partners': 'Academic collaboration on curriculum design and youth development programming.',
   'International & Public Diplomacy Partners': 'International public diplomacy and global partner network engagements bringing world-class AI and computer science education to North-East Nigeria.',

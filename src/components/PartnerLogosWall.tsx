@@ -5,6 +5,7 @@ import { partners, partnersByCategory, partnerCategoryDescriptions } from '@/dat
 
 export default function PartnerLogosWall() {
   const categoryOrder: Array<keyof typeof partnersByCategory> = [
+    'Development Partners',
     'Federal Government & Regulatory Agencies',
     'Academic Partners',
     'International & Public Diplomacy Partners',

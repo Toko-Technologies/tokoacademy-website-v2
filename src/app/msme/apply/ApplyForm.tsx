@@ -44,6 +44,11 @@ const YEARS_ID = '497124056';
 const TOO_NEW = ['Less than 1 year', '1 to 2 years'];
 const OTHER = '__other_option__';
 const STORAGE_KEY = 'toko-msme-application';
+const NAME_ID = '121249134';
+const PHONE_ID = '942581385';
+const EMAIL_ID = '796740396';
+/** Sends the applicant a confirmation: email (ZeptoMail) or, with no email, SMS (Termii). */
+const NOTIFY_URL = '/api/msme-notify.php';
 const ELIGIBILITY_STEP = 1;
 const LAST = SECTIONS.length - 1;
 const ALL_QUESTIONS = SECTIONS.flatMap((s) => s.questions);
@@ -149,6 +154,32 @@ function buildBody(a: Answers) {
   body.append('fvv', '1');
   body.append('pageHistory', SECTIONS.map((_, i) => i).join(','));
   return body;
+}
+
+/**
+ * Asks the server to send the confirmation, once the application is in.
+ * Fire and forget: whatever happens here, the application itself has already
+ * been submitted, so a failure is never shown to the applicant. `keepalive`
+ * lets the request finish even if they close the tab straight away.
+ */
+function sendConfirmation(a: Answers) {
+  const email = a.noEmail ? '' : (a.text[EMAIL_ID] ?? '').trim();
+  const payload = {
+    name: (a.text[NAME_ID] ?? '').trim(),
+    email,
+    phone: normalisePhone(a.text[PHONE_ID] ?? ''),
+  };
+  try {
+    fetch(NOTIFY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true,
+      credentials: 'omit',
+    }).catch(() => { /* confirmation is best-effort */ });
+  } catch {
+    /* very old browser: no confirmation, application unaffected */
+  }
 }
 
 /** Reads saved progress, keeping only values this form could have produced. */
@@ -389,7 +420,10 @@ export default function ApplyForm() {
       body: buildBody(answers),
       signal: ctrl.signal,
     })
-      .then(() => showSuccess())
+      .then(() => {
+        sendConfirmation(answers);
+        showSuccess();
+      })
       .catch(() => showFormError(MSG.network, true))
       .finally(() => {
         clearTimeout(timeout);
