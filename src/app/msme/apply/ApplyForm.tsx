@@ -11,8 +11,9 @@
  *    field unless "I do not have an email address" is ticked).
  *  - "Choose up to three" is enforced, and "None of these"-style options
  *    clear the others.
- *  - An LGA other than Yola North/South, or a business under 3 years old,
- *    stops the application with an explanation (BLOCK_INELIGIBLE).
+ *  - Everyone can submit, whatever their LGA or business age: eligibility is
+ *    checked by the team afterwards, in the Sheet. (BLOCK_INELIGIBLE = true
+ *    would stop applicants outside Yola North/South or under 3 years old.)
  *  - Progress survives an accidental refresh (sessionStorage, this tab only)
  *    and is cleared on submit.
  *  - A hidden spam-trap field, and the submit button locks while sending.
@@ -33,8 +34,11 @@ import { Icon } from '../Icons';
 import { MSME_PATH } from '../config';
 import { GOOGLE_FORM_URL, SECTIONS, SUBMIT_URL, type ChoiceQuestion, type Question } from './questions';
 
-/** Stop applicants who fail the eligibility rules. false lets them through. */
-const BLOCK_INELIGIBLE = true;
+/**
+ * Stop applicants who fail the eligibility rules? Off: everyone may submit,
+ * and the team separates eligible applicants afterwards from the responses.
+ */
+const BLOCK_INELIGIBLE = false;
 const LGA_ID = '970623196';
 const YEARS_ID = '497124056';
 const TOO_NEW = ['Less than 1 year', '1 to 2 years'];

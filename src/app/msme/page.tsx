@@ -21,7 +21,7 @@ const IMG = '/images/msme';
 
 /**
  * Partner logos from the 4logos panel (Toko Academy left out). EU, GIZ and the
- * coat of arms are vector / official renders; the other three are cleaned crops.
+ * coat of arms are vector / official renders; German Cooperation is a cleaned crop.
  * `wide` logos get a little more width so they read at the same visual weight.
  */
 const PARTNER_LOGOS = [
@@ -29,8 +29,6 @@ const PARTNER_LOGOS = [
   { src: 'german-cooperation.png', alt: 'German Cooperation (Deutsche Zusammenarbeit)', w: 840, h: 492, wide: true },
   { src: 'nigeria-coat-of-arms.png', alt: 'Coat of arms of the Federal Republic of Nigeria', w: 400, h: 339 },
   { src: 'giz-logo.svg', alt: 'Implemented by GIZ — Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ) GmbH', w: 307, h: 80, wide: true },
-  { src: 'bincike-international.png', alt: 'Bincike International', w: 704, h: 300, wide: true },
-  { src: 'jaress-agricultural-finance.png', alt: 'Jaress Agricultural Finance Ltd (J.A.F.)', w: 356, h: 356 },
 ];
 
 function PartnerLogos({ compact = false }: { compact?: boolean }) {
