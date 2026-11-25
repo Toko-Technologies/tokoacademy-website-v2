@@ -31,9 +31,4 @@ return [
     'termii_base_url'   => 'https://api.ng.termii.com',
     // 'dnd' also reaches numbers on Do-Not-Disturb (needs approved sender ID).
     'termii_channel'    => 'dnd',
-
-    // Safety limits (defaults shown).
-    // 'max_per_ip_per_hour' => 5,
-    // 'max_email_per_day'   => 1000,
-    // 'max_sms_per_day'     => 300,
 ];

@@ -23,8 +23,7 @@
  *   - POST + JSON only, small bodies, same-origin requests only.
  *   - Nigerian mobile numbers only; email validated.
  *   - The text is fixed. Only a first name, reduced to letters, is inserted.
- *   - One message per recipient per channel per day, a per-IP hourly limit, and a
- *     hard daily cap on emails and on SMS across the whole site.
+ *   - No sending limits: every application gets a confirmation.
  *
  * Written for PHP 7.4 and later.
  */
@@ -60,12 +59,9 @@ function toko_config(): array
         // 'generic' does not reach DND numbers.
         'termii_channel'       => 'dnd',
 
-        // Links and limits
+        // Links, and where the send log is kept
         'msme_url'             => 'https://tokoacademy.org/msme/',
         'allowed_origins'      => ['https://tokoacademy.org', 'https://www.tokoacademy.org'],
-        'max_per_ip_per_hour'  => 5,
-        'max_email_per_day'    => 1000,
-        'max_sms_per_day'      => 300,
         'data_dir'             => '',
     ];
 
@@ -118,37 +114,6 @@ function data_dir(array $cfg): string
         }
     }
     return $dir;
-}
-
-/**
- * Adds one to a named counter inside a time window and returns the new count,
- * or returns the current count without adding when $peek is true.
- * File-locked, so two requests at once cannot both slip under a limit.
- */
-function bump(string $dir, string $name, int $windowSeconds, bool $peek = false): int
-{
-    $file = $dir . '/rl-' . hash('sha256', $name) . '.json';
-    $fh = @fopen($file, 'c+');
-    if (!$fh) {
-        return 0;
-    }
-    flock($fh, LOCK_EX);
-    $raw = stream_get_contents($fh);
-    $data = json_decode($raw ?: '[]', true);
-    $now = time();
-    if (!is_array($data) || !isset($data['start'], $data['count']) || $now - (int) $data['start'] >= $windowSeconds) {
-        $data = ['start' => $now, 'count' => 0];
-    }
-    if (!$peek) {
-        $data['count']++;
-        ftruncate($fh, 0);
-        rewind($fh);
-        fwrite($fh, json_encode($data));
-        fflush($fh);
-    }
-    flock($fh, LOCK_UN);
-    fclose($fh);
-    return (int) $data['count'];
 }
 
 function log_line(string $dir, string $line): void
@@ -369,43 +334,21 @@ if (!$hasEmail && !$hasSms) {
 }
 
 $dir = data_dir($cfg);
-$ip = (string) ($_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown');
-
-if (bump($dir, 'ip:' . $ip, 3600) > (int) $cfg['max_per_ip_per_hour']) {
-    respond(429, ['ok' => false, 'error' => 'rate_limited']);
-}
 
 // Every applicant gets both: an email when they gave an address, and an SMS
-// when they gave a phone number. Each channel is limited separately to one
-// message per recipient per day, and has its own site-wide daily cap.
+// when they gave a phone number. No sending limits.
 $channels = [];
 
 if ($email !== '' && $hasEmail) {
-    if (bump($dir, 'to:' . $email, 86400) > 1) {
-        $channels['email'] = 'already_sent';
-    } elseif (bump($dir, 'cap:email', 86400, true) >= (int) $cfg['max_email_per_day']) {
-        $channels['email'] = 'daily_cap';
-        log_line($dir, 'email SKIPPED daily cap reached ' . mask($email));
-    } else {
-        bump($dir, 'cap:email', 86400);
-        $ok = send_email($cfg, $email, $name);
-        $channels['email'] = $ok ? 'sent' : 'failed';
-        log_line($dir, 'email ' . ($ok ? 'sent' : 'FAILED') . ' ' . mask($email));
-    }
+    $ok = send_email($cfg, $email, $name);
+    $channels['email'] = $ok ? 'sent' : 'failed';
+    log_line($dir, 'email ' . ($ok ? 'sent' : 'FAILED') . ' ' . mask($email));
 }
 
 if ($phone !== '' && $hasSms) {
-    if (bump($dir, 'to:' . $phone, 86400) > 1) {
-        $channels['sms'] = 'already_sent';
-    } elseif (bump($dir, 'cap:sms', 86400, true) >= (int) $cfg['max_sms_per_day']) {
-        $channels['sms'] = 'daily_cap';
-        log_line($dir, 'sms SKIPPED daily cap reached ' . mask($phone));
-    } else {
-        bump($dir, 'cap:sms', 86400);
-        $ok = send_sms($cfg, $phone, $name);
-        $channels['sms'] = $ok ? 'sent' : 'failed';
-        log_line($dir, 'sms ' . ($ok ? 'sent' : 'FAILED') . ' ' . mask($phone));
-    }
+    $ok = send_sms($cfg, $phone, $name);
+    $channels['sms'] = $ok ? 'sent' : 'failed';
+    log_line($dir, 'sms ' . ($ok ? 'sent' : 'FAILED') . ' ' . mask($phone));
 }
 
 respond(200, ['ok' => true, 'sent' => in_array('sent', $channels, true), 'channels' => $channels]);
