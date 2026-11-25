@@ -640,7 +640,7 @@ export default function ApplyForm() {
           <p className="success-lead">Thank you. Your application has been received. Shortlisted applicants may be contacted for a short interview before selection.</p>
           <div className="success-next">
             <p><strong>What happens next</strong></p>
-            <p>Keep your phone close. If you are shortlisted, the Toko Academy team will contact you before training begins on <strong>30th November 2026</strong>.</p>
+            <p>Keep your phone close. If you are shortlisted, the Toko Academy team will contact you with the training dates and venue.</p>
           </div>
           <Link className="btn-secondary" href={MSME_PATH}>Back to programme page</Link>
         </div>

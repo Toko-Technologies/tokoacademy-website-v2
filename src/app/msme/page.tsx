@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { pageMetadata, jsonLdScript, SITE_URL, ORG_ID } from '@/lib/seo';
 import { Icon } from './Icons';
-import { Countdown, DaysToGo, MobileCta } from './Live';
-import { MSME_APPLY_PATH, MSME_START } from './config';
+import { MobileCta } from './Live';
+import { MSME_APPLY_PATH } from './config';
 
 /**
  * MSME Capacity Development Training: landing page.
@@ -49,10 +49,10 @@ export const metadata: Metadata = pageMetadata({
   path: '/msme',
   title: 'MSME Capacity Development Training',
   description:
-    'A free, two-week practical business capacity development programme for established MSMEs in Yola North and Yola South. Starts 30 November 2026.',
+    'A free, two-week practical business capacity development programme for established MSMEs in Yola North and Yola South. Registration is open.',
   socialTitle: 'Free MSME Capacity Development Training — Yola North & Yola South',
   socialDescription:
-    'Two weeks of practical training in business planning, marketing, operations and finance. 100% free. Starts 30 November 2026.',
+    'Two weeks of practical training in business planning, marketing, operations and finance. 100% free. Registration is open.',
   image: {
     url: `${IMG}/hero-market-traders.jpg`,
     alt: 'Two women in traditional attire trading fresh vegetables at a busy Nigerian market',
@@ -61,22 +61,15 @@ export const metadata: Metadata = pageMetadata({
   },
 });
 
-const eventJsonLd = {
+/* A Course, not an Event: an Event needs a start date, and the dates are not fixed yet. */
+const courseJsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'Event',
+  '@type': 'Course',
   name: 'MSME Capacity Development Training',
   description:
     'A free, two-week practical business capacity development programme for established MSMEs in Yola North and Yola South LGAs. Week 1 in person in Yola, Week 2 online.',
-  startDate: MSME_START.toISOString(),
-  eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
-  eventStatus: 'https://schema.org/EventScheduled',
-  location: {
-    '@type': 'Place',
-    name: 'Yola, Adamawa State',
-    address: { '@type': 'PostalAddress', addressLocality: 'Yola', addressRegion: 'Adamawa', addressCountry: 'NG' },
-  },
   image: [`${SITE_URL}${IMG}/hero-market-traders.jpg`],
-  organizer: { '@id': ORG_ID },
+  provider: { '@id': ORG_ID },
   isAccessibleForFree: true,
   offers: {
     '@type': 'Offer',
@@ -131,7 +124,7 @@ const SERVICES = [
 export default function MsmePage() {
   return (
     <>
-      <script {...jsonLdScript(eventJsonLd)} />
+      <script {...jsonLdScript(courseJsonLd)} />
 
       {/* Announcement bar */}
       <div className="announce">
@@ -139,8 +132,7 @@ export default function MsmePage() {
           <p>
             <span className="announce-dot" aria-hidden="true"></span>
             <strong>Registration is open.</strong>{' '}
-            <span className="announce-long">FREE training starts Monday, 30 November</span>{' '}
-            <DaysToGo />
+            <span className="announce-long">FREE training for businesses in Yola North &amp; Yola South</span>
           </p>
           <Link href={MSME_APPLY_PATH}>
             Register now <Icon name="arrow" />
@@ -164,8 +156,6 @@ export default function MsmePage() {
               </Link>
               <a className="btn-secondary btn-lg" href="#eligibility">Check eligibility</a>
             </div>
-            {/* Live countdown to the start date. Hides itself once training has begun. */}
-            <Countdown />
           </div>
 
           <div className="hero-media">
@@ -198,8 +188,8 @@ export default function MsmePage() {
               <dd>2-week programme</dd>
             </div>
             <div className="fact">
-              <dt><Icon name="cal" />Commences</dt>
-              <dd>30th November, 2026</dd>
+              <dt><Icon name="pin" />Location</dt>
+              <dd>Yola North &amp; Yola South</dd>
             </div>
             <div className="fact">
               <dt><Icon name="monitor" />Format</dt>
@@ -308,7 +298,7 @@ export default function MsmePage() {
           <div className="section-head">
             <p className="eyebrow text-brand">Training structure</p>
             <h2>Two weeks: one in the room, one online</h2>
-            <p className="lead">Training commences on <strong>Monday, 30th November, 2026</strong>.</p>
+            <p className="lead">Training dates will be shared with selected participants.</p>
           </div>
 
           <ol className="timeline">
@@ -317,7 +307,7 @@ export default function MsmePage() {
               <article className="card timeline-card">
                 <img src={`${IMG}/icss-in-person-session.jpg`} alt="Participants seated at long tables while a facilitator leads an in-person ICSS training session" width={1800} height={1012} loading="lazy" />
                 <div className="timeline-body">
-                  <p className="timeline-when">Week of 30 November 2026</p>
+                  <p className="timeline-when">In person · Yola</p>
                   <h3><Icon name="users" />Physical, in-person training</h3>
                   <p>Face-to-face sessions with facilitators and fellow business owners. Venue details will be shared after registration.</p>
                 </div>
@@ -328,7 +318,7 @@ export default function MsmePage() {
               <article className="card timeline-card">
                 <img src={`${IMG}/week2-virtual-session.jpg`} alt="Participants following a facilitator who is presenting over a video call" width={2000} height={1122} loading="lazy" />
                 <div className="timeline-body">
-                  <p className="timeline-when">Week of 7 December 2026</p>
+                  <p className="timeline-when">Online</p>
                   <h3><Icon name="monitor" />Virtual training sessions</h3>
                   <p>Online sessions you can join from your business or home, building on what you started in Week 1.</p>
                 </div>
@@ -372,7 +362,7 @@ export default function MsmePage() {
                 Register for free
                 <Icon name="arrow" />
               </Link>
-              <p className="final-cta-meta">Training begins Monday, 30th November 2026</p>
+              <p className="final-cta-meta">Selected participants will be contacted with the training dates</p>
             </div>
             <div className="help">
               <p className="help-title">Questions before you register?</p>

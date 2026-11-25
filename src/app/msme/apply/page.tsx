@@ -41,7 +41,7 @@ export default function MsmeApplyPage() {
           <p className="lead">Answer based on what is true for your business today, not what you plan to do. There are no right or wrong answers; honest answers help us place you in the training that will help you most.</p>
           <ul className="apply-facts">
             <li><Icon name="tag" /><strong>100% free</strong></li>
-            <li><Icon name="cal" />Starts 30 November 2026</li>
+            <li><Icon name="cal" />2-week programme</li>
             <li><Icon name="pin" />Yola North &amp; Yola South only</li>
             <li><Icon name="clock" />About 15 minutes</li>
           </ul>
